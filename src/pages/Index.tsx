@@ -19,10 +19,20 @@ const Index = () => {
     { id: 'ghost2', type: 'ghost', x: 70, y: 65 },
     
     { id: 'skeleton', type: 'skeleton', x: 65, y: 45 },
-    
-    { id: 'path1', type: 'path', x: 40, y: 30, direction: 'horizontal' },
-    { id: 'path2', type: 'path', x: 50, y: 40, direction: 'vertical' },
-    { id: 'path3', type: 'path', x: 60, y: 30, direction: 'horizontal' },
+  ];
+
+  const paths = [
+    { id: 'path-h1', x: 5, y: 50, width: 40, height: 6, direction: 'horizontal' },
+    { id: 'path-h2', x: 55, y: 50, width: 40, height: 6, direction: 'horizontal' },
+    { id: 'path-v1', x: 47, y: 5, width: 6, height: 40, direction: 'vertical' },
+    { id: 'path-v2', x: 47, y: 56, width: 6, height: 39, direction: 'vertical' },
+  ];
+
+  const fences = [
+    { id: 'fence-top', x: 2, y: 2, width: 96, isHorizontal: true },
+    { id: 'fence-bottom', x: 2, y: 95, width: 96, isHorizontal: true },
+    { id: 'fence-left', x: 2, y: 2, height: 93, isHorizontal: false },
+    { id: 'fence-right', x: 95, y: 2, height: 93, isHorizontal: false },
   ];
 
   const renderElement = (element: any) => {
@@ -132,32 +142,83 @@ const Index = () => {
           </div>
         );
 
-      case 'path':
-        return (
-          <div
-            key={element.id}
-            className="absolute"
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-            }}
-          >
-            <div
-              className={`bg-gradient-to-br from-gray-500 to-gray-700 shadow-inner ${
-                element.direction === 'horizontal' ? 'w-16 h-8' : 'w-8 h-16'
-              }`}
-              style={{
-                clipPath: element.direction === 'horizontal' 
-                  ? 'polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)'
-                  : 'polygon(0% 10%, 50% 0%, 100% 10%, 100% 90%, 50% 100%, 0% 90%)'
-              }}
-            ></div>
-          </div>
-        );
-
       default:
         return null;
     }
+  };
+
+  const renderPath = (path: any) => {
+    return (
+      <div
+        key={path.id}
+        className="absolute bg-gradient-to-br from-amber-800 to-amber-900 shadow-inner"
+        style={{
+          left: `${path.x}%`,
+          top: `${path.y}%`,
+          width: `${path.width}%`,
+          height: `${path.height}%`,
+          borderRadius: '4px',
+        }}
+      >
+        <div className="w-full h-full opacity-30 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(0,0,0,0.2)_4px,rgba(0,0,0,0.2)_8px)]"></div>
+      </div>
+    );
+  };
+
+  const renderFence = (fence: any) => {
+    const fencePostCount = fence.isHorizontal ? 12 : 10;
+    const posts = Array.from({ length: fencePostCount }, (_, i) => i);
+    
+    return (
+      <div
+        key={fence.id}
+        className="absolute"
+        style={{
+          left: `${fence.x}%`,
+          top: `${fence.y}%`,
+          width: fence.isHorizontal ? `${fence.width}%` : '2%',
+          height: fence.isHorizontal ? '2%' : `${fence.height}%`,
+        }}
+      >
+        <div className="relative w-full h-full">
+          {posts.map((i) => (
+            <div
+              key={i}
+              className="absolute bg-gradient-to-br from-amber-700 to-amber-900 shadow-md"
+              style={fence.isHorizontal ? {
+                left: `${(i / (fencePostCount - 1)) * 100}%`,
+                top: '0',
+                width: '8px',
+                height: '100%',
+                transform: 'translateX(-50%)',
+              } : {
+                top: `${(i / (fencePostCount - 1)) * 100}%`,
+                left: '0',
+                height: '8px',
+                width: '100%',
+                transform: 'translateY(-50%)',
+              }}
+            >
+              <div className="w-full h-full border border-amber-950/50"></div>
+            </div>
+          ))}
+          <div 
+            className="absolute bg-gradient-to-br from-amber-600 to-amber-800"
+            style={fence.isHorizontal ? {
+              top: '40%',
+              left: '0',
+              width: '100%',
+              height: '20%',
+            } : {
+              left: '40%',
+              top: '0',
+              height: '100%',
+              width: '20%',
+            }}
+          ></div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -172,6 +233,9 @@ const Index = () => {
 
         <div className="relative w-full aspect-square max-w-2xl mx-auto bg-gradient-to-br from-emerald-950 to-green-900 rounded-2xl shadow-2xl overflow-hidden border-4 border-orange-600/30">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(45,80,22,0.4),transparent_70%)]"></div>
+          
+          {fences.map(renderFence)}
+          {paths.map(renderPath)}
           
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
             <div className="relative w-32 h-40 flex flex-col items-center">
@@ -190,7 +254,7 @@ const Index = () => {
         </div>
 
         <div className="mt-6 text-center text-sm text-orange-300/70">
-          Элементы: тыквы со свечением, мрачные деревья, надгробия, призраки и скелет
+          Квадратный парк с дорожками, заборчиком и хеллоуинскими украшениями
         </div>
       </div>
     </div>
